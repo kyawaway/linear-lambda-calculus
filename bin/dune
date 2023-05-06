@@ -1,0 +1,4 @@
+(executable
+ (public_name linear-lambda-calculus)
+ (name main)
+ (libraries linear-lambda-calculus.preproc))
