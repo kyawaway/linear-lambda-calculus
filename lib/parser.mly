@@ -1,49 +1,44 @@
-(** Parser **)
-
-%{
-    open Ast
-%}
-
 %token <string> ID
-%token <qualifier> QUAL
+%token <Ast.qualifier> QUAL
 %token <bool> BOOL
-%token LET EQ LEFT RIGHT SEMI IF THEN ELSE COMMA 
-%token LPAREN RPAREN
-%token LAMBDA DOT COLON MULTI ARROW IN SPLIT AS TYBOOL
+%token LET EQ IF THEN ELSE COMMA LEFT RIGHT
+%token DOT LAMBDA COLON MULTI ARROW IN SPLIT AS TYBOOL LPAREN RPAREN
 %token EOL
 
-%start parse
-%type <Ast.toplevel> parse
-%type <Ast.term> term simpleterm
-%type <Ast.pretype> qualtype
+%start toplevel 
+%type <Ast.toplevel> toplevel
+%type <Ast.term> term term_sub
+%type <Ast.pretype> pretype
+
 %%
 
-parse:
-      LET ID EQ term SEMI parse { ($2,$4) :: $6 }
-    | { [] }
-    | EOL { [] }
+toplevel:
+    LET n=ID EQ tm=term EOL { (n,tm) }
+    | error
+    { failwith
+        (Printf.sprintf "parse error near characters %d-%d"
+           (Parsing.symbol_start ())
+           (Parsing.symbol_end ()))
+    }
     ;
+    
+term: 
+      term_sub { $1 }
+    | tm1=term tm2=term_sub { Ast.TmApp (tm1, tm2) }
 
-term:
-      term simpleterm { TmApp ($1,$2) }
-    | simpleterm { $1 }
-    ;
-
-simpleterm:
-      ID { Var $1 }
-    | QUAL BOOL { Boolean ($1,$2) }
-    | IF t1=term THEN t2=term ELSE t3=term { TmIf (t1,t2,t3) }
-    | QUAL LEFT t1=term COMMA t2=term RIGHT { TmPair ($1,t1,t2) }
-    | SPLIT t1=term AS v1=ID COMMA v2=ID IN t2=term { TmSplit (t1,v1,v2,t2) }
-    | QUAL LAMBDA v=ID COLON q=qualtype DOT t=term { TmAbs ($1,v,q,t) }
+term_sub:
+      ID { Ast.TmVar $1 }
+    | QUAL BOOL { Ast.TmBoolean ($1,$2) }
+    | IF tm1=term THEN tm2=term ELSE tm3=term { Ast.TmIf (tm1,tm2,tm3) }
+    | q=QUAL LEFT tm1=term COMMA tm2=term RIGHT { Ast.TmPair (q,tm1,tm2) }
+    | SPLIT tm1=term AS v1=ID COMMA v2=ID IN tm2=term { Ast.TmSplit (tm1,v1,v2,tm2) }
+    | q=QUAL LAMBDA v=ID COLON ty=pretype DOT tm=term { Ast.TmAbs (q,v,ty,tm) }
     | LPAREN term RPAREN { $2 }
     ;
 
-
-
-qualtype:
-      QUAL TYBOOL { TyBool $1 }
-    | QUAL LPAREN q1=qualtype MULTI q2=qualtype RPAREN { TyPair ($1,q1,q2) }
-    | QUAL LPAREN q1=qualtype ARROW q2=qualtype RPAREN { TyFunc ($1,q1,$q2) }
-    | LPAREN qualtype RPAREN { $2 }
+pretype:
+      QUAL TYBOOL { Ast.TyBool $1 }
+    | q=QUAL LPAREN ty1=pretype MULTI ty2=pretype RPAREN { Ast.TyPair (q,ty1,ty2) }
+    | q=QUAL LPAREN ty1=pretype ARROW ty2=pretype RPAREN { Ast.TyFunc (q,ty1,ty2) }
+    | LPAREN pretype RPAREN { $2 }
     ;

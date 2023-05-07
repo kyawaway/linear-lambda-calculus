@@ -1,4 +1,4 @@
-(** Lexer **)
+ (** Lexer **)
 {
 open Parser
 }
@@ -10,24 +10,24 @@ rule main = parse
   | "lambda" | '\\' { LAMBDA }
   | "true" { BOOL(true) }
   | "false" { BOOL(false) }
-  | "LIN" { QUAL(Ast.Lin) }
-  | "UN" { QUAL(Ast.Un) }
+  | "lin" { QUAL(Ast.Lin) }
+  | "un" { QUAL(Ast.Un) }
   | "if" { IF }
   | "then" { THEN }
   | "else" { ELSE }
   | "let" { LET }
-  | "in" { IN }
   | "split" { SPLIT }
+  | "in" { IN }
   | "as" { AS }
-  | "->" { ALLOW }
+  | "->" { ARROW }
   | "bool" { TYBOOL }
   | ':' { COLON }
-  | ';' { SEMI }
   | '=' { EQ }
   | '<' { LEFT }
   | '>' { RIGHT }
   | '*' { MULTI }
   | '.' { DOT }
+  | ',' { COMMA }
   | '(' { LPAREN }
   | ')' { RPAREN }
   | eof { exit 0 }
