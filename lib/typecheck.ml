@@ -11,13 +11,12 @@ exception UnUsedError of string
 let get_qualifier t =
   match t with TyBool q -> q | TyPair (q, _, _) -> q | TyFunc (q, _, _) -> q
 
-(** check_qual_contain_rule' -> qualifier -> qualifier -> *)
 
-(* termがcontainment ruleを満たしているかを確かめる(満たしていたらtrue) *)
-(* containment ruleとは，unで修飾された型の中にlinで修飾された型が現れてはならないという規則． *)
 
 (** check_qual_contain_rule : qualifier -> type -> bool *)
 let rec check_qual_contain_rule qual ty =
+(* termがcontainment ruleを満たしているかを確かめる(満たしていたらtrue) *)
+(* containment ruleとは，unで修飾された型の中にlinで修飾された型が現れてはならないという規則． *)
   let check_qual_contain_rule' qual qual' = not (qual = Un && qual' = Lin) in
   match ty with
   | TyBool qual' -> check_qual_contain_rule' qual qual'
