@@ -5,6 +5,11 @@
 (ocamllex
  (modules lexer))
 
+(env
+ (dev
+  (flags
+   (:standard -w -8))))
+
 (library
  (public_name linear-lambda-calculus.preproc)
  (name preproc))
