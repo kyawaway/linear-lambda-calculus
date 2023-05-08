@@ -2,7 +2,7 @@
 %token <Ast.qualifier> QUAL
 %token <bool> BOOL
 %token LET EQ IF THEN ELSE COMMA LEFT RIGHT
-%token DOT LAMBDA COLON MULTI ARROW IN SPLIT AS TYBOOL LPAREN RPAREN
+%token DOT LAMBDA COLON MULTI ARROW IN SPLIT AS TYBOOL SEMI LPAREN RPAREN
 %token EOL
 
 %start toplevel 
@@ -13,7 +13,7 @@
 %%
 
 toplevel:
-    LET n=ID EQ tm=term EOL { (n,tm) }
+    LET n=ID EQ tm=term SEMI EOL { (n,tm) }
     | error
     { failwith
         (Printf.sprintf "parse error near characters %d-%d"
