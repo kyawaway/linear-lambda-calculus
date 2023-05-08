@@ -32,7 +32,7 @@ let rec type_of_string t =
 type context = (string * pretype) list
 
 (* print *)
-let print_context ctx : unit =
+let print_context ctx =
   let _ =
     List.map
       (fun (x, y) -> print_string ("(" ^ x ^ "," ^ type_of_string y ^ ")\n"))

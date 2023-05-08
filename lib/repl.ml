@@ -9,8 +9,9 @@ let repl () =
     flush stdout;
     let lexbuf = Lexing.from_channel stdin in
     let name, tm = toplevel Lexer.main lexbuf in
-    let ty', ctx' = type_check tm ctx in
-    print_context ((name, ty') :: ctx');
-    loop ctx'
+    let ty, ctx' = type_check tm ctx in
+    let ctx'' = context_check name ty ctx' in
+    print_context ctx'';
+    loop ctx''
   in
   loop []
